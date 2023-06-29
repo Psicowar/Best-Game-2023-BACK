@@ -1,5 +1,6 @@
 const tokenGenerator = require('../config/helpers/tokenGenerator');
-const userModel = require('../models/user.model');
+const UserModel = require('../models/user.model');
+const bcrypt = require("bcrypt");
 
 
 // Create user method
@@ -7,15 +8,20 @@ const userModel = require('../models/user.model');
 const createUser = async (req, res) => {
     const { data } = req.body;
     try {
-        const user = await userModel.create({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            password: data.password,
-            remainingVotes: 5,
-            role: 'U'
-        });
-        res.status(201).send({ status: "TRUE", user });
+        const userExist = await UserModel.findOne({ email: data.email });
+        if (!userExist) {
+            const user = await UserModel.create({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                password: data.password,
+                remainingVotes: 5,
+                role: 'U'
+            });
+            res.status(201).send({ status: "TRUE", user });
+        } else {
+            res.status(204).send({ status: "FALSE" });
+        }
     } catch {
         res.status(500).send({ status: "FALSE" });
     }
@@ -56,23 +62,17 @@ const checkUserPassword = async (req, res) => {
 // Authenticate user method
 
 const authenticate = async (req, res) => {
-    const params = req.body;
-    const { data } = params;
-    const user = {
-        email: data.email,
-        password: data.password,
-        id: data.id,
-    };
-    const currentUser = await UserRepository.get(user.email);
-    if (currentUser === "undefined")
+    const { data } = req.body;
+    const user = await UserModel.findOne({ email: data.email });
+    if (user === "undefined")
         return res.status(401).send();
-    const token = await tokenGenerator(currentUser.id);
-    await bcrypt.compare(
+    const token = await tokenGenerator(user.id);
+    bcrypt.compare(
         data.password,
-        currentUser?.password,
+        user?.password,
         (error, result) => {
             if (error) throw error;
-            if (result) return res.status(201).send({ token, currentUser });
+            if (result) return res.status(201).send({ token, user });
             if (!result) return res.status(401).send();
             return res.status(500).send();
         }

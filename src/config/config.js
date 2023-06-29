@@ -12,7 +12,8 @@ const ENV = process.env.NODE_ENV || "development";
 const CONFIG = {
     development: {
         app: {
-            PORT: process.env.PORT || 4001
+            PORT: process.env.PORT || 4001,
+            FRONT_URI: process.env.FRONT_URI
         },
         db: {
             MONGO_URI: process.env.MONGO_URI
@@ -20,7 +21,8 @@ const CONFIG = {
     },
     production: {
         app: {
-            PORT: process.env.PORT || 4008
+            PORT: process.env.PORT || 4008,
+            FRONT_URI: process.env.FRONT_URI
         },
         db: {
             MONGO_URI: process.env.MONGO_URI

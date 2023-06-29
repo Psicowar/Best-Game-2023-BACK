@@ -5,14 +5,14 @@ const userModel = require('../models/user.model');
 // Create user method
 
 const createUser = async (req, res) => {
-    const { firstName, lastName, email, password, remainingVotes } = req.body;
+    const { data } = req.body;
     try {
         const user = await userModel.create({
-            firstName,
-            lastName,
-            email,
-            password,
-            remainingVotes,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            password: data.password,
+            remainingVotes: 5,
             role: 'U'
         });
         res.status(201).send({ status: "TRUE", user });

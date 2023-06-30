@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
-// import { UserModel } from "../repository/schemas/UserSchema";
+const UserModel = require('../models/user.model')
+
 
 const tokenChecker = async (req, res, next) => {
     const token = req.headers.authorization
@@ -7,11 +8,11 @@ const tokenChecker = async (req, res, next) => {
     if (!token) return res.status(401).send('Access Denied')
     try {
         const { id } = jwt.verify(token, process.env.JWT_SECRET)
-        // const user = await UserModel.findById(id)
-        // if (user) {
-        //     res.locals.user = user
-        //     next()
-        // }
+        const user = await UserModel.findById(id)
+        if (user) {
+            res.locals.user = user
+            next()
+        }
 
     } catch (err) {
         console.error(err);

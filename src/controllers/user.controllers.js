@@ -1,6 +1,10 @@
 const tokenGenerator = require('../config/helpers/tokenGenerator');
+const fs = require('fs-extra')
 const UserModel = require('../models/user.model');
 const bcrypt = require("bcrypt");
+const { cloudinary, uploadImage } = require('../utils/cloudinary');
+const GameModel = require('../models/game.model');
+
 
 
 // Create user method
@@ -58,6 +62,24 @@ const checkUserPassword = async (req, res) => {
     }
 }
 
+// Get user data
+
+const getUserData = async (req, res) => {
+    const user = res.locals.user;
+    const { id } = user
+    const userFinded = await UserModel.findOne({ _id: id })
+    const userData = {
+        id: userFinded?.id,
+        firstName: userFinded?.firstName,
+        lastName: userFinded?.lastName,
+        email: userFinded?.email,
+        role: userFinded?.role,
+        remainingVotes: userFinded?.remainingVotes
+    };
+    if (userData) return res.status(200).send(userData);
+    return res.status(500).send("Something went wrong");
+}
+
 
 // Authenticate user method
 
@@ -66,23 +88,47 @@ const authenticate = async (req, res) => {
     const user = await UserModel.findOne({ email: data.email });
     if (user === "undefined")
         return res.status(401).send();
-    const token = await tokenGenerator(user.id);
+    const token = await tokenGenerator(user._id);
     bcrypt.compare(
         data.password,
         user?.password,
         (error, result) => {
+            const { firstName, lastName, email, _id, role, remainingVotes } = user
             if (error) throw error;
-            if (result) return res.status(201).send({ token, user });
+            if (result) return res.status(201).send({ token, firstName, lastName, email, _id, role, remainingVotes });
             if (!result) return res.status(401).send();
             return res.status(500).send();
         }
     );
 }
 
+const uploadGame = async (req, res, next) => {
+    const { title, categorie } = (req.body);
+    try {
+        if (req.files?.image.name) {
+            const imageUploaded = await uploadImage(req.files.image.tempFilePath)
+            const newGame = await GameModel.create({
+                picture: imageUploaded.secure_url,
+                gameName: title,
+                categorie,
+                votes: 0
+            })
+            await fs.unlink(req.files.image.tempFilePath)
+            res.status(200).send({status: true, data: newGame, message: "Successfully Uploaded"})
+        } else {
+            res.status(200).send({status: false, message: "No image uploaded"})
+        }
+    } catch (error) {
+        res.status(500).send({status: false, message: error.message})
+    }
+}
+
 module.exports = {
     createUser,
     checkUserRole,
     checkUserPassword,
-    authenticate
+    authenticate,
+    getUserData,
+    uploadGame
 
 }

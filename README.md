@@ -16,6 +16,10 @@ npm run dev
 
 ---
 
+## Create .env
+create .env file: VITE_BACKEND=http://localhost:4000/
+
+
 ### Project Description
 
 App for vote the best game of 2023, with signupm signin and Admin ACC

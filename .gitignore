@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-node_modules
-=======
 .env
 .env.development
 .env.production
 node_modules
 package-lock.json
->>>>>>> dev

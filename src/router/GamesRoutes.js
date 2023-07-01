@@ -8,7 +8,9 @@ GamesRoutes
     .get("/all", gameController.getAllGames) // Get all games
     .delete("/deleteGame/:id", gameController.deleteGame) // Delete single game
     .patch("/updateGameData", gameController.updateGameData) // Edit game data
-    .patch("/updateGameVotes", gameController.updateGameVotes) // Edit game votes
+    .patch("/addGameVote", gameController.addGameVote) // Edit game votes
+    .patch("/removeGameVotes", gameController.removeGameVotes) // Edit game votes
+
 
 
 module.exports = GamesRoutes;

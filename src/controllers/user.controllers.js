@@ -74,7 +74,8 @@ const getUserData = async (req, res) => {
         lastName: userFinded?.lastName,
         email: userFinded?.email,
         role: userFinded?.role,
-        remainingVotes: userFinded?.remainingVotes
+        remainingVotes: userFinded?.remainingVotes,
+        votedGames: userFinded?.votedGames
     };
     if (userData) return res.status(200).send(userData);
     return res.status(500).send("Something went wrong");

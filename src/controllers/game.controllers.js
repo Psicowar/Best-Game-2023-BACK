@@ -50,23 +50,25 @@ const updateGameData = async (req, res) => {
 
 // Update game votes
 
-const updateGameVotes = async (req, res) => {
+const addGameVote = async (req, res) => {
     const { gameId, userId } = req.body
     try {
         const game = await GameModel.findByIdAndUpdate(
             { _id: gameId },
             {
-                $set: {
-                    votes: + 1
+                $inc: {
+                    votes: 1
                 }
             }
         );
-        console.log(game);
+        const votedGame = await UserModel.updateOne(
+            { _id: userId },
+            { $pull: { votedGames: gameId } }
+        )
         const userFinded = await UserModel.findById({ _id: userId })
         if (userFinded.remainingVotes === 0) {
             return res.status(200).send({ status: "FALSE", message: "You have voted 5 games, you cannot vote more" })
         } else {
-
             const user = await UserModel.findByIdAndUpdate(
                 { _id: userId },
                 {
@@ -75,10 +77,44 @@ const updateGameVotes = async (req, res) => {
                     }
                 }
             )
-            console.log(user);
+            res.status(201).send({ status: "TRUE", user });
         }
 
-        res.status(201).send({ status: "TRUE" });
+    } catch {
+        res.status(500).send({ status: "FALSE" });
+    }
+}
+
+const removeGameVotes = async (req, res) => {
+    const { gameId, userId } = req.body
+    try {
+        const game = await GameModel.findByIdAndUpdate(
+            { _id: gameId },
+            {
+                $inc: {
+                    votes: - 1
+                }
+            }
+        );
+        const votedGame = await UserModel.updateOne(
+            { _id: userId },
+            { $pull: { votedGames: gameId } }
+        )
+        const userFinded = await UserModel.findById({ _id: userId })
+        if (userFinded.remainingVotes === 0) {
+            return res.status(200).send({ status: "FALSE", message: "You have voted 5 games, you cannot vote more" })
+        } else {
+            const user = await UserModel.findByIdAndUpdate(
+                { _id: userId },
+                {
+                    $inc: {
+                        remainingVotes: 1
+                    }
+                }
+            )
+            res.status(201).send({ status: "TRUE", user });
+        }
+
     } catch {
         res.status(500).send({ status: "FALSE" });
     }
@@ -102,6 +138,7 @@ module.exports = {
     getAllGames,
     uploadGame,
     updateGameData,
-    updateGameVotes,
+    addGameVote,
+    removeGameVotes,
     deleteGame,
 }

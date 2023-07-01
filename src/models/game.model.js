@@ -7,7 +7,7 @@ const GameSchema = Schema(
         picture: { type: String, required: true },
         gameName: { type: String, required: true },
         categorie: { type: String, required: true },
-        votes: { type: Number },
+        votes: { type: Number, default:0 },
     },
     {
         timestamps: true,

@@ -9,7 +9,8 @@ const UserSchema = Schema(
         lastName: { type: String, required: true },
         email: { type: String, required: true },
         password: { type: String, required: true },
-        remainingVotes: { type: Number },
+        remainingVotes: { type: Number, default:5 },
+        votedGames: { type: Array },
         role: { type: String },
         token: { type: String }
     },

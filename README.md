@@ -1,6 +1,4 @@
-# Best-Game-2023-BACK
-# GIF-APP-FRONT
-
+# Best-Game-2023-FRONT
 
 
 ### Clone the repository:

@@ -1,58 +1,69 @@
-# Best-Game-2023-FRONT
+# Best-Game-2023-BACK
 
 
 ### Clone the repository:
 
-https://github.com/Psicowar/Best-Game-2023-FRONT.git
+https://github.com/Psicowar/Best-Game-2023-BACK.git
 
 ## Install required dependencies:
 
 npm install
 
 ## Run:
-npm run dev
+npm start
 
 ---
 
-## Create .env
-create .env file: VITE_BACKEND=http://localhost:4000/
+## Create .env.development and .env.production
+PORT=4000
+FRONT_URI=http://localhost:5173
+MONGO_URI=
+NODE_ENV=development // production
 
+JWT_SECRET=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 
 ### Project Description
 
-App for vote the best game of 2023, with signupm signin and Admin ACC
+App for vote the best game of 2023, with signup, signin and Admin ACC
 
 admin@admin.com : Gist22Attomo!
 
 ---
 ### Used Technologies
-React
+Node
 
-Javascript
-
-Html
-
-Tailwind
+JavaScript
 
 ---
 ### Used Libraries
-Flowbite-react
-
-React-hook-form
-
-React-loader-spinner
-
-React-router-dom
-
-Sweetalert2
-
-React-hook-form
-
-React-icons
 
 Axios
 
-Vite
+Bcrypt
+
+Cors
+
+Dotenv
+
+Express
+
+Helmet
+
+Jsonwebtoken
+
+Mongoose
+
+Express-fileupload
+
+Fs-extra
+
+Cloudinary
+
+MongoDB
 
 ---
 

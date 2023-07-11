@@ -19,12 +19,10 @@ const createUser = async (req, res) => {
                 lastName: data.lastName,
                 email: data.email,
                 password: data.password,
-                remainingVotes: 5,
-                role: 'U'
             });
-            res.status(201).send({ status: "TRUE", user });
+            res.status(200).send(user);
         } else {
-            res.status(204).send({ status: "FALSE" });
+            res.status(422).send({ status: "FALSE" });
         }
     } catch {
         res.status(500).send({ status: "FALSE" });
@@ -115,12 +113,12 @@ const uploadGame = async (req, res, next) => {
                 votes: 0
             })
             await fs.unlink(req.files.image.tempFilePath)
-            res.status(200).send({status: true, data: newGame, message: "Successfully Uploaded"})
+            res.status(200).send({ status: true, data: newGame, message: "Successfully Uploaded" })
         } else {
-            res.status(200).send({status: false, message: "No image uploaded"})
+            res.status(200).send({ status: false, message: "No image uploaded" })
         }
     } catch (error) {
-        res.status(500).send({status: false, message: error.message})
+        res.status(500).send({ status: false, message: error.message })
     }
 }
 

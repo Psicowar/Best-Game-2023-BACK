@@ -52,37 +52,42 @@ const updateGameData = async (req, res) => {
 
 const addGameVote = async (req, res) => {
     const { gameId, userId } = req.body
-    try {
-        const game = await GameModel.findByIdAndUpdate(
-            { _id: gameId },
-            {
-                $inc: {
-                    votes: 1
+    const userFinded = await UserModel.findById({ _id: userId })
+    if (userFinded.remainingVotes <= 0) {
+        return res.status(422).send({ status: "FALSE", message: "You have voted 5 games, you cannot vote more" })
+    } else {
+        try {
+            const game = await GameModel.findByIdAndUpdate(
+                { _id: gameId },
+                {
+                    $inc: {
+                        votes: 1
+                    }
                 }
-            }
-        );
-        const votedGame = await UserModel.updateOne(
-            { _id: userId },
-            { $pull: { votedGames: gameId } }
-        )
-        const userFinded = await UserModel.findById({ _id: userId })
-        if (userFinded.remainingVotes === 0) {
-            return res.status(200).send({ status: "FALSE", message: "You have voted 5 games, you cannot vote more" })
-        } else {
+            );
             const user = await UserModel.findByIdAndUpdate(
                 { _id: userId },
                 {
-                    $inc: {
-                        remainingVotes: - 1
+                    $inc:
+                    {
+                        remainingVotes: -1
+                    },
+                    $push:
+                    {
+                        votedGames: gameId
                     }
+                },
+                {
+                    multi: true
                 }
             )
-            res.status(201).send({ status: "TRUE", user });
-        }
+            res.status(200).send({ status: "TRUE", user, game });
 
-    } catch {
-        res.status(500).send({ status: "FALSE" });
+        } catch {
+            res.status(500).send({ status: "FALSE" });
+        }
     }
+
 }
 
 const removeGameVotes = async (req, res) => {
@@ -96,28 +101,27 @@ const removeGameVotes = async (req, res) => {
                 }
             }
         );
-        const votedGame = await UserModel.updateOne(
+        const user = await UserModel.findByIdAndUpdate(
             { _id: userId },
-            { $pull: { votedGames: gameId } }
-        )
-        const userFinded = await UserModel.findById({ _id: userId })
-        if (userFinded.remainingVotes === 0) {
-            return res.status(200).send({ status: "FALSE", message: "You have voted 5 games, you cannot vote more" })
-        } else {
-            const user = await UserModel.findByIdAndUpdate(
-                { _id: userId },
+            {
+                $inc:
                 {
-                    $inc: {
-                        remainingVotes: 1
-                    }
+                    remainingVotes: +1
+                },
+                $pull:
+                {
+                    votedGames: gameId
                 }
-            )
-            res.status(201).send({ status: "TRUE", user });
-        }
-
+            },
+            {
+                multi: true
+            }
+        )
+        res.status(200).send({ status: "TRUE", user, game });
     } catch {
         res.status(500).send({ status: "FALSE" });
     }
+
 }
 
 
@@ -127,7 +131,7 @@ const deleteGame = async (req, res) => {
     const { id } = req.params
     try {
         const game = await GameModel.findByIdAndDelete({ _id: id });
-        res.status(200).send({ status: "TRUE" })
+        res.status(200).send({ status: "TRUE", message: "Game deleted successfully" })
     } catch {
         res.status(500).send({ status: "FALSE" });
     }

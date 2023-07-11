@@ -1,6 +1,7 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require("bcrypt");
 
+
 // User schema
 
 const UserSchema = Schema(
@@ -9,9 +10,9 @@ const UserSchema = Schema(
         lastName: { type: String, required: true },
         email: { type: String, required: true },
         password: { type: String, required: true },
-        remainingVotes: { type: Number, default:5 },
-        votedGames: { type: Array },
-        role: { type: String },
+        remainingVotes: { type: Number, default: 5, max: 5, min: 0 },
+        votedGames: { type: Array, default: [] },
+        role: { type: String, default: 'U' },
         token: { type: String }
     },
     {
